@@ -4,11 +4,23 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
 import android.graphics.Path
 import android.view.accessibility.AccessibilityEvent
+import android.content.Intent
 
 class CustomAccessibilityService : AccessibilityService() {
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
-    
-    override fun onInterrupt() {}
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        // Handle accessibility events
+    }
+
+    override fun onInterrupt() {
+        // Handle interruption
+    }
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        // Start overlay service when accessibility service is connected
+        val overlayIntent = Intent(this, OverlayService::class.java)
+        startService(overlayIntent)
+    }
 
     fun performClick(x: Float, y: Float) {
         val path = Path()

@@ -1,5 +1,9 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../db/preferences_service.dart';
+import '../services/overlay_service.dart'; 
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -13,6 +17,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _overlaySize = 60.0;
   bool _enableVibration = true;
   bool _enableSound = true;
+  final _scrollController = TextEditingController(text: '2000');
+  final _preferences = SharedPreferences.getInstance();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = await _preferences;
+    setState(() {
+      _scrollController.text = 
+          (prefs.getInt('scrollInterval') ?? 2000).toString();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +77,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onChanged: (value) {
               setState(() => _enableSound = value);
             },
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _scrollController,
+                  decoration: const InputDecoration(
+                    labelText: 'Scroll Interval (ms)',
+                    helperText: 'Time between scrolls in milliseconds',
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    final prefs = await _preferences;
+                    await prefs.setInt('scrollInterval', 
+                        int.parse(_scrollController.text));
+                    final service = OverlayService();
+                    await service.showOverlay();
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Start Service'),
+                ),
+              ],
+            ),
           ),
         ],
       ),

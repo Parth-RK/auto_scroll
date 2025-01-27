@@ -34,7 +34,7 @@ class MainActivity: FlutterActivity() {
                     }
                 }
                 "showOverlay" -> {
-                    // Implementation will be added in OverlayService
+                    // Handle overlay show request
                     result.success(null)
                 }
                 "hideOverlay" -> {
